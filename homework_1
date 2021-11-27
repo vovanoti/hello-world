@@ -1,0 +1,5 @@
+# Task 1:
+Используя команду ls, необходимо вывести на экран все файлы, которые расположены в секционных директориях /usr/share/man/manX и содержат слово "config" в имени.
+Одним вызовом ls найти все файлы, содержащие слово "system" в каталогах /usr/share/man/man1 и /usr/share/man/man7
+[user@localhost ~]$ ls /usr/share/man/man{0..9} | grep config
+[user@localhost ~]$ ls /usr/share/man/man{1,7} | grep system
