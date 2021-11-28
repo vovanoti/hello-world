@@ -1,0 +1,35 @@
+# Task 3:
+При помощи команд head и tail, выведите последние 2 строки файла /etc/fstab и первые 7 строк файла /etc/yum.conf
+Что произойдёт, если мы запросим больше строк, чем есть в файле? Попробуйте выполнить это на примере, используя команду wc (word cound) для подсчёта количества строк в файле.
+
+[user@localhost ~]$ tail -n 2 /etc/fstab
+UUID=aefd8d0c-1d2b-4bda-96f5-f9faa5948745 /boot                   xfs     defaults        0 0
+/dev/mapper/centos-swap swap                    swap    defaults        0 0
+
+[user@localhost ~]$ head -n 7 /etc/yum.conf
+[main]
+cachedir=/var/cache/yum/$basearch/$releasever
+keepcache=0
+debuglevel=2
+logfile=/var/log/yum.log
+exactarch=1
+obsoletes=1
+
+В случае, если мы запрашиваем больше строк, чем есть в файле, программы head и tail просто отображают весь файл как если бы была запущена программа cat,
+например мы запрашиваем 2000 строк в файле /etc/fstab с доступными 11:
+[user@localhost ~]$ wc -l /etc/fstab
+11 /etc/fstab
+
+[user@localhost ~]$ tail -n 2000 /etc/fstab
+
+#
+# /etc/fstab
+# Created by anaconda on Sat Nov 27 12:43:33 2021
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+/dev/mapper/centos-root /                       xfs     defaults        0 0
+UUID=aefd8d0c-1d2b-4bda-96f5-f9faa5948745 /boot                   xfs     defaults        0 0
+/dev/mapper/centos-swap swap                    swap    defaults        0 0
+
