@@ -1,0 +1,16 @@
+# Task 4:
+Создайте в домашней директории файлы file_name1.md, file_name2.md и file_name3.md. Используя {}, переименуйте:
+file_name1.md в file_name1.textdoc
+file_name2.md в file_name2
+file_name3.md в file_name3.md.latest
+file_name1.textdoc в file_name1.txt
+
+[user@localhost ~]$ touch file_name{1..3}.md
+[user@localhost ~]$ mv -v file_name1{.md,.textdoc}
+‘file_name1.md’ -> ‘file_name1.textdoc’
+[user@localhost ~]$ mv -v file_name2{.md,}
+‘file_name2.md’ -> ‘file_name2’
+[user@localhost ~]$ mv -v file_name3.md{,.latest}
+‘file_name3.md’ -> ‘file_name3.md.latest’
+[user@localhost ~]$ mv -v file_name1.{textdoc,txt}
+‘file_name1.textdoc’ -> ‘file_name1.txt’
