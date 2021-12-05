@@ -1,0 +1,34 @@
+# Task 1:
+
+Открыть инструкцию по пользованию приложением awk. 
+Найти секцию про использование переменных окружения. 
+Сохранить эту секцию в отдельный файл.
+
+Для начала нам необходимо перенаправить поток вывода в файл, для этого вводим следующию команду:
+[student@localhost chapter2]$ man awk > awk.txt
+После этого создадим новый файл, который будет содержать нужную нам секцию, например:
+[student@localhost chapter2]$ touch envvar.txt
+Затем откроем 2 файла через VIM командой:
+[student@localhost chapter2]$ vi awk.txt envvar.txt
+И найдем в первом файле нужную нам секцию используя команду:
+/environment var
+Нажимая на клавишу n достигаем нужной нам секции.
+Далее ставим курсор в начало строки нужного фрагмента, выделяем все строчки с помощью клавиши v и клавиш навигаций (j - строчка вниз, k - строчка вверх).
+После успешного выделения, нажимаем клавишу y и все выделенные ранее строки будут скопированы.
+Теперь необходимо перейти во второй файл, для этого в VIM набираем команду :n.
+Будет открыт следующий документ и мы можем вставить информацию нажатием клавиши p.
+Для сохранения изменений, наберем команду :wq и тем самым выйдем из VIM.
+В итоге документ имеет следующий вид:
+[student@localhost chapter2]$ cat envvar.txt
+ENVIRONMENT VARIABLES
+       The  AWKPATH environment variable can be used to provide a list of directories that
+       gawk searches when looking for files named via the -f and --file options.
+
+       For socket communication, two special environment variables can be used to  control
+       the  number  of  retries  (GAWK_SOCK_RETRIES),  and  the  interval  between retries
+       (GAWK_MSEC_SLEEP).  The interval is in milliseconds. On systems that do not support
+       usleep(3), the value is rounded up to an integral number of seconds.
+
+       If  POSIXLY_CORRECT  exists  in  the  environment,  then gawk behaves exactly as if
+       --posix had been specified on the command line.  If --lint has been specified, gawk
+       issues a warning message to this effect.

@@ -1,0 +1,42 @@
+# Task 3:
+
+Создать 2 файла: 1-й - текстовый с указанием абслютного пути до директории.
+2-й - скрипт, который при выполнении выводит содержимое директории по указанному в первом файле.
+3*. Скрипт выводит отдельно количество файлов и количество директорий.
+3**. Скрипт принимает любое количество записей в первом файле и обрабатывает из последовательно.
+
+#!/bin/bash
+dir=$(cat dir.txt)
+IFS=$'\n'
+for var in $dir
+do
+echo "the directory is $var"
+ls -a $var
+files=$(find $var  -maxdepth 1 -type f | wc -l)
+dirs=$(find $var -maxdepth 1 -type d | wc -l)
+echo "the number of files is $files"
+echo "the number of directories is $dirs"
+done
+
+Первый файл имеет название dir.txt, второй имеет название task3.sh
+Разделителем является символ перевода строки (\n), соответственно обработать абсолютный путь можно, только если запись произведена в одну строчку.
+Пример выполнения:
+
+[student@localhost chapter2]$ ./task3.sh
+the directory is /home/student/chapter2
+.  ..  awk.txt  cycle.sh  dir.txt  hello  hello.c  task3.sh  test
+the number of files is 6
+the number of directories is 2
+the directory is /home/student/
+.   .bash_history  .bash_profile  chapter2  .lesshst  sshtocentos.sh  .test
+..  .bash_logout   .bashrc        chapter3  .ssh      .swp
+the number of files is 8
+the number of directories is 4
+the directory is /home/student/chapter3
+.  ..  eof.txt  err.txt  regexp.txt  sed.txt  test.sh
+the number of files is 5
+the number of directories is 1
+the directory is /home/
+.  ..  student
+the number of files is 0
+the number of directories is 2
