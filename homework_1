@@ -1,0 +1,37 @@
+# Task 1:
+
+Q: What is the most frequent browser?
+A: Safari
+
+Сначала я проанализировал какие существуют браузеры в логах с помощью less access.log
+Затем отсеял каждое вхождение по имени браузера и сохранил полученный результат в отдельный файл.
+
+[student@localhost chapter3]$ awk '{if($0 ~ /Chrome/) print $0}' access.log > chrome.txt                                                                                                     
+[student@localhost chapter3]$ less chrome.txt
+[student@localhost chapter3]$ wc -l chrome.txt
+147488 chrome.txt
+[student@localhost chapter3]$ awk '{if($0 ~ /Firefox/) print $0}' access.log > firefox.txt
+[student@localhost chapter3]$ less firefox.txt
+[student@localhost chapter3]$ wc -l firefox.txt
+48892 firefox.txt
+[student@localhost chapter3]$ awk '{if($0 ~ /Safari/) print $0}' access.log > safari.txt
+[student@localhost chapter3]$ less safari.txt
+[student@localhost chapter3]$ wc -l safari.txt
+163621 safari.txt
+[student@localhost chapter3]$ awk '{if($0 ~ /SamsungBrowser/) print $0}' access.log > samsungbrowser.txt
+[student@localhost chapter3]$ less samsungbrowser.txt
+[student@localhost chapter3]$ wc -l samsungbrowser.txt
+3975 samsungbrowser.txt
+[student@localhost chapter3]$ awk '{if($0 ~ /Opera/) print $0}' access.log > opera.txt
+[student@localhost chapter3]$ wc -l opera.txt
+594 opera.txt
+(Также впоследствие написал скрипт, который бы подсчитывал в конце файла результат поиска, например:
+awk 'BEGIN {n=0}{if($0 ~ /Chrome/) n=n+1} END {print n " Here is the number of Chrome users"}' access.log > count.txt
+)
+
+Судя по отсеяным строкам, самый популярный браузер - Safari.
+
+Пройдясь по всему access.log и исключая вхождение имен браузеров, можно увидеть, что большинство запросов осуществлялось не через браузер вовсе
+[student@localhost chapter3]$ awk -F\" '{if($0 !~ /Chrome/ && $0 !~ /SamsungBrowser/ && $0 !~ /Firefox/ && $0 !~ /Safari/ && $0 !~ /Opera/) print $1,$6}' access.log > unknown.txt
+[student@localhost chapter3]$ wc -l unknown.txt
+461279 unknown.txt
