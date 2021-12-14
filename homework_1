@@ -1,0 +1,39 @@
+# Task 1: Users and groups
+
+Используйте команды: groupadd, useradd, passwd, chage и другие.
+Создайте группу sales с GID 4000 и пользователей bob, alice, eve c основной группой sales. 
+Измените пользователям пароли.
+Все новые аккаунты должны обязательно менять свои пароли каждый 30 дней.
+Новые аккаунты группы sales должны истечь по окончанию 90 дней срока, а bob должен изменять его пароль каждые 15 дней.
+Дополнительно:
+Заставьте пользователей сменить пароль после первого логина.
+
+
+Для начала создадим группу
+[student@localhost ~]$ sudo groupadd -g 4000 sales
+
+И создадим пользователей с добавлением в основную группу
+[student@localhost ~]$ sudo useradd -g 4000 bob
+[student@localhost ~]$ sudo useradd -g 4000 alice
+[student@localhost ~]$ sudo useradd -g 4000 eve
+
+Зададим пароли
+[student@localhost ~]$ sudo passwd bob
+[student@localhost ~]$ sudo passwd alice
+[student@localhost ~]$ sudo passwd eve
+
+И установим срок действия учетных записией группы sales на 90 дней, задав срок действия пароля 30 дней (для bob 15 дней)
+[student@localhost ~]$ sudo chage -M 15 -W 14 -E $(date -d +90days +%Y-%m-%d) bob
+[student@localhost ~]$ sudo chage -M 30 -W 14 -E $(date -d +90days +%Y-%m-%d) alice
+[student@localhost ~]$ sudo chage -M 30 -W 14 -E $(date -d +90days +%Y-%m-%d) eve
+
+Отредактируем /etc/login.defs, тогда все свежесозданные пользователи должны будут менять пароль каждые 30 дней
+PASS_MAX_DAYS   30
+PASS_MIN_DAYS   0
+PASS_MIN_LEN    5
+PASS_WARN_AGE   7
+
+Заставим пользователей сменить пароль после первого логина
+[student@localhost ~]$ sudo passwd -e bob
+[student@localhost ~]$ sudo passwd -e alice
+[student@localhost ~]$ sudo passwd -e eve

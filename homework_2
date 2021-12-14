@@ -1,0 +1,31 @@
+# Task 2: Controlling access to files with Linux file system permissions
+
+Используйте команды: su, mkdir, chown, chmod и другие.
+Создайте трёх пользователей glen, antony, lesly.
+У вас должна быть директория /home/students, где эти три пользователя могут работать совместно с файлами.
+Должен быть возможен только пользовательский и групповой доступ, создание и удаление файлов в /home/students. 
+Файлы, созданные в этой директории, должны автоматически присваиваться группе студентов students.
+
+Создаем директорию students
+[student@localhost home]$ sudo mkdir students
+
+Создаем группу students
+[student@localhost home]$ sudo groupadd students
+
+Создадим пользователей
+[student@localhost home]$ sudo useradd glen -g 4001
+[student@localhost home]$ sudo useradd antony -g 4001
+[student@localhost home]$ sudo useradd lesly -g 4001
+
+Изменяем владельца для директории
+[student@localhost home]$ sudo chown student:students students
+
+Изменяем права доступа на директорию, чтобы доступ на чтение/запись были только у владельца и членов группы students
+[student@localhost home]$ chmod 774 students
+
+Как можно видеть ниже, файлы, созданные в этой директории, автоматически присваиваются группе students
+[lesly@localhost students]$ touch lesly.txt
+[lesly@localhost students]$ ls -l
+total 0
+-rw-r--r--. 1 glen  students 0 Dec 14 23:58 glen.txt
+-rw-r--r--. 1 lesly students 0 Dec 15 00:05 lesly.txt
