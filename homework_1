@@ -1,0 +1,41 @@
+# Task 1:
+1. Run a sleep command three times at different intervals
+
+[student@localhost chapter5]$ sleep 1000 &
+[1] 1325
+[student@localhost chapter5]$ sleep 2000 &
+[2] 1326
+[student@localhost chapter5]$ sleep 3000 &
+[3] 1327
+
+2. Send a SIGSTOP signal to all of them in three different ways.
+
+[student@localhost chapter5]$ kill -s STOP 1325
+[student@localhost chapter5]$ kill -19 1326
+[student@localhost chapter5]$ kill -SIGSTOP 1327
+
+3. Check their statuses with a job command
+
+[student@localhost chapter5]$ jobs
+[1]   Stopped                 sleep 1000
+[2]-  Stopped                 sleep 2000
+[3]+  Stopped                 sleep 3000
+
+4. Terminate one of them. (Any)
+
+[student@localhost chapter5]$ kill -9 1325
+
+5. To other send a SIGCONT in two different ways.
+
+[student@localhost chapter5]$ kill -18 1326
+[student@localhost chapter5]$ kill -s SIGCONT 1327
+
+6. Kill one by PID and the second one by job ID
+
+[student@localhost chapter5]$ jobs -l
+[2]-  1326 Running                 sleep 2000 &
+[3]+  1327 Running                 sleep 3000 &
+[student@localhost chapter5]$ kill %2
+[student@localhost chapter5]$ kill -15 1327
+-bash: kill: (1327) - No such process
+[3]+  Terminated              sleep 3000
