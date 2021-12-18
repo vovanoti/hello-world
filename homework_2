@@ -1,0 +1,92 @@
+# Task 2:
+1. Write two daemons: 
+one should be a simple daemon and do sleep 10 after a start and then do echo 1 > /tmp/homework, 
+the second one should be oneshot and do echo 2 > /tmp/homework without any sleep
+
+[student@localhost chapter5]$ vi echosleep
+#!/bin/bash
+sleep 10
+echo 1 > /tmp/homework
+
+[student@localhost chapter5]$ vi echo2
+#!/bin/bash
+echo 2 > /tmp/homework
+
+[student@localhost chapter5]$ chmod u+x echosleep
+[student@localhost chapter5]$ chmod u+x echo2
+
+[student@localhost chapter5]$ vi /etc/systemd/system/my-echo-1.service
+[Unit]
+Description=Just print the echo after the sleep
+[Service]
+Type=simple
+ExecStart=/home/student/chapter5/echosleep
+
+2. Make the second depended on the first one (should start only after the first)
+
+Параметр Requires запускает второй демон сразу после успешного запуска первого
+
+[student@localhost chapter5]$ sudo vi /etc/systemd/system/my-echo-2.service
+[Unit]
+Description=Just print the echo
+Requires=my-echo-1.service
+[Service]
+Type=oneshot
+ExecStart=/home/student/chapter5/echo2
+
+[student@localhost chapter5]$ systemctl list-unit-files | grep echo
+my-echo-1.service                             static
+my-echo-2.service                             static
+
+3. Write a timer for the second one and configure it to run on 01.01.2019 at 00:00
+
+Установим дату выполнения в будущем времени (иначе в списке таймеров след. запуск будет указан n/a)
+
+[student@localhost chapter5]$ sudo vi /etc/systemd/system/my-echo-2.timer
+[Unit]
+Description=Run echo2 at the date 01.01.2022 00:00
+[Timer]
+OnCalendar=2022-01-01 00:00:00
+
+4. Start all daemons and timer, check their statuses, timer list and /tmp/homework
+
+[student@localhost chapter5]$ sudo systemctl start my-echo-2.timer
+
+[student@localhost chapter5]$ sudo systemctl start my-echo-2
+[student@localhost chapter5]$ sudo systemctl list-timers
+NEXT                         LEFT                LAST                         PASSED      UNI
+Sun 2021-12-19 14:47:32 MSK  19h left            Sat 2021-12-18 14:47:32 MSK  4h 3min ago sys
+Sat 2022-01-01 00:00:00 MSK  1 weeks 6 days left n/a                          n/a         my-
+
+[student@localhost chapter5]$ sudo systemctl start my-echo-2
+[student@localhost chapter5]$ sudo systemctl status my-echo-1
+● my-echo-1.service - Just print the echo after the sleep
+   Loaded: loaded (/etc/systemd/system/my-echo-1.service; static; vendor preset: disabled)
+   Active: active (running) since Sat 2021-12-18 18:52:46 MSK; 9s ago
+ Main PID: 2971 (echosleep)
+   CGroup: /system.slice/my-echo-1.service
+           ├─2971 /bin/bash /home/student/chapter5/echosleep
+           └─2973 sleep 10
+
+Dec 18 18:52:46 localhost.localdomain systemd[1]: Started Just print the echo after the ...p.
+Hint: Some lines were ellipsized, use -l to show in full.
+[student@localhost chapter5]$ sudo systemctl status my-echo-2
+● my-echo-2.service - Just print the echo
+   Loaded: loaded (/etc/systemd/system/my-echo-2.service; static; vendor preset: disabled)
+   Active: inactive (dead) since Sat 2021-12-18 18:52:46 MSK; 11s ago
+  Process: 2970 ExecStart=/home/student/chapter5/echo2 (code=exited, status=0/SUCCESS)
+ Main PID: 2970 (code=exited, status=0/SUCCESS)
+
+Dec 18 18:52:46 localhost.localdomain systemd[1]: Starting Just print the echo...
+Dec 18 18:52:46 localhost.localdomain systemd[1]: Started Just print the echo
+
+[student@localhost chapter5]$ cat /tmp/homework
+1
+
+5. Stop all daemons and timer
+
+[student@localhost chapter5]$ sudo systemctl stop my-echo-1
+[student@localhost chapter5]$ sudo systemctl stop my-echo-2
+Warning: Stopping my-echo-2.service, but it can still be activated by:
+  my-echo-2.timer
+[student@localhost chapter5]$ sudo systemctl stop my-echo-2.timer
