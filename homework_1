@@ -1,0 +1,91 @@
+# Task 1:
+1. SSH to remotehost using username and password provided to you in Slack.
+Log out from remotehost.
+
+[student@localhost ~]$ ssh Vladimir_Smirnov@18.221.144.175
+
+2. Generate new SSH key-pair on your localhost with name "hw-5" (keys should be created in ~/.ssh folder).
+
+[student@localhost ~]$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/student/.ssh/id_rsa): /home/student/.ssh/hw-5
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/student/.ssh/hw-5.
+Your public key has been saved in /home/student/.ssh/hw-5.pub.
+The key fingerprint is:
+SHA256:sYNKwalAUpFoRPM05ZEZJnGFh8oCaNzsrgJ18Pho8as student@localhost.localdomain
+The key's randomart image is:
++---[RSA 2048]----+
+|*B=Bo*B.         |
+|*+*+**..         |
+|= o==.. .        |
+| o+=o. . o       |
+| .+*. . S        |
+|. ooo.   .       |
+|... ..           |
+|..  .            |
+|. E.             |
++----[SHA256]-----+
+
+3. Set up key-based authentication, so that you can SSH to remotehost without password.
+
+[student@localhost ~]$ ssh-copy-id -i ~/.ssh/hw-5.pub Vladimir_Smirnov@18.221.144.175
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/student/.ssh/hw-5.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+Vladimir_Smirnov@18.221.144.175's password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'Vladimir_Smirnov@18.221.144.175'"
+and check to make sure that only the key(s) you wanted were added.
+
+4. SSH to remotehost without password. Log out from remotehost.
+
+[student@localhost ~]$ ssh -i ~/.ssh/hw-5 Vladimir_Smirnov@18.221.144.175
+Last login: Sun Dec 19 20:10:21 2021 from 94.19.226.0
+
+5. Create SSH config file, so that you can SSH to remotehost simply running `ssh remotehost` command. 
+As a result, provide output of command `cat ~/.ssh/config`.
+
+[student@localhost ~]$ vi .ssh/config
+Host remotehost
+  Hostname 18.221.144.175
+  User Vladimir_Smirnov
+  IdentityFile ~/.ssh/hw-5
+
+[student@localhost ~]$ chmod 600 .ssh/config
+[student@localhost ~]$ ssh remotehost
+Last login: Sun Dec 19 20:06:54 2021 from 94.19.226.0
+
+[Vladimir_Smirnov@ip-172-31-33-155 ~]$ exit
+logout
+Connection to 18.221.144.175 closed.
+
+6. Using command line utility (curl or telnet) verify that there are some webserver running on port 80 of webserver.
+Notice that webserver has a private network IP, so you can access it only from the same network (when you are on remotehost that runs in the same private network).
+Log out from remotehost.
+
+[Vladimir_Smirnov@ip-172-31-33-155 ~]$ curl -v telnet://172.31.45.237:80
+*   Trying 172.31.45.237:80...
+* Connected to 172.31.45.237 (172.31.45.237) port 80 (#0)
+^C
+
+7. Using SSH setup port forwarding, so that you can reach webserver from your localhost (choose any free local port you like).
+
+[student@localhost ~]$ ssh -L 8081:172.31.45.237:80 -i ~/.ssh/hw-5 Vladimir_Smirnov@18.221.144.175
+
+8. Like in 1.6, but on localhost using command line utility verify that localhost and port you have specified act like webserver, returning same result as in 1.6.
+
+[student@localhost ~]$ curl -v telnet://localhost:8081
+* About to connect() to localhost port 8081 (#0)
+*   Trying ::1...
+* Connected to localhost (::1) port 8081 (#0)
+
+9 (*) Open webserver webpage in browser of your Host machine of VirtualBox (Windows, or Mac, or whatever else you use). You may need to setup port forwarding in settings of VirtualBox.
+
+[student@localhost ~]$ ssh -g -L 8081:172.31.45.237:80 -i ~/.ssh/hw-5 Vladimir_Smirnov@18.221.144.175
+[student@localhost man]$ sudo iptables -I INPUT -p tcp --dport 8081 -j ACCEPT
+
+P.S. Thanks for Rick Roll
