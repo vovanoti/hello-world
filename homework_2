@@ -1,0 +1,55 @@
+# Task 2:
+
+1. Imagine your localhost has been relocated to Havana. 
+Change the time zone on the localhost to Havana and verify the time zone has been changed properly (may be multiple commands).
+
+[student@localhost ~]$ sudo timedatectl list-timezones | grep Havana
+America/Havana
+[student@localhost ~]$ sudo timedatectl set-timezone America/Havana
+[student@localhost ~]$ timedatectl
+      Local time: Mon 2021-12-20 15:27:22 CST
+  Universal time: Mon 2021-12-20 20:27:22 UTC
+        RTC time: Mon 2021-12-20 20:27:22
+
+2. Find all systemd journal messages on localhost, that were recorded in the last 50 minutes and originate from a system service started with user id 81 (single command).
+
+[student@localhost ~]$ sudo journalctl _UID=81 --since "50 minutes ago"
+-- Logs begin at Tue 2021-12-21 14:05:54 CST, end at Tue 2021-12-21 14:17:32 CST. --
+Dec 21 14:06:12 localhost.localdomain dbus[648]: [system] Activating via systemd: service nam
+Dec 21 14:06:13 localhost.localdomain dbus[648]: [system] Successfully activated service 'org
+Dec 21 14:06:13 localhost.localdomain dbus[648]: [system] Activating via systemd: service nam
+Dec 21 14:06:13 localhost.localdomain dbus[648]: [system] Successfully activated service 'org
+Dec 21 14:12:24 localhost.localdomain dbus[648]: [system] Activating via systemd: service nam
+Dec 21 14:12:24 localhost.localdomain dbus[648]: [system] Successfully activated service 'org
+lines 1-7/7 (END)
+
+3. Configure rsyslogd by adding a rule to the newly created configuration file /etc/rsyslog.d/auth-errors.conf 
+to log all security and authentication messages with the priority alert and higher to the /var/log/auth-errors file. 
+Test the newly added log directive with the logger command (multiple commands).
+
+Создадим конфигурационный файл
+[student@localhost ~]$ sudo touch /etc/rsyslog.d/auth-errors.conf
+
+И добавим в него следующую строчку
+authpriv.alert                                          /var/log/auth-errors
+
+
+В файле rsyslog.conf уже указана интересующая нас строчка, которая читает все .conf файлы в папке /etc/rsyslog.d/
+# Include all config files in /etc/rsyslog.d/
+$IncludeConfig /etc/rsyslog.d/*.conf
+
+Перезапустим сервис rsyslog
+[student@localhost ~]$ sudo systemctl restart rsyslog
+
+И проверим логирование
+[student@localhost ~]$ logger -p authpriv.debug "test debug"
+[student@localhost ~]$ logger -p authpriv.info "test info"
+[student@localhost ~]$ logger -p authpriv.alert "test alert"
+[student@localhost ~]$ logger -p authpriv.emerg "test emergency"
+
+[student@localhost ~]$ less /var/log/auth-errors
+Dec 23 00:22:53 localhost student: test alert
+Dec 23 00:23:22 localhost student: test emergency
+
+В дополнение следует ограничить доступ для данного файла, чтобы только root пользователь мог просматривать сведения о проблемах с аутентификацией
+[student@localhost ~]$ sudo chmod 600 /var/log/auth-errors
