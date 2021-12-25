@@ -1,0 +1,99 @@
+# Task 3:
+
+1. Find all regular files below 100 bytes inside your home directory.____________________________________________________________
+
+[student@localhost chapter5]$ find /home/student -size +100c
+...
+/home/student/chapter2/awk.txt
+/home/student/chapter2/test/task2.sh
+/home/student/chapter2/task3.sh
+/home/student/chapter5
+/home/student/chapter5/.swp
+/home/student/chapter5/input.c
+/home/student/chapter5/input
+
+2. Find an inode number and a hard links count for the root directory.____________________________________________________________
+The hard link count should be about 17. Why?
+
+[student@localhost chapter5]$ sudo find /root -ls | awk '{print $1}'
+8409153
+8785363
+8785364
+8785365
+8785366
+8785367
+8409154
+8409164
+8409166
+...
+
+[student@localhost chapter5]$ sudo find /root -ls | wc -l
+29
+
+[student@localhost chapter5]$ sudo du /root --inodes
+[sudo] password for student:
+1       /root/.pki/nssdb
+2       /root/.pki
+15      /root/rpmbuild/SOURCES
+2       /root/rpmbuild/SPECS
+18      /root/rpmbuild
+29      /root
+
+[student@localhost ~]$ sudo stat /root | grep -i inode
+Device: fd00h/64768d    Inode: 8409153     Links: 4
+
+Думаю эти линки являются линками на корневой каталог при возврате из директорий внутри (не символьных ссылок).
+то есть в корневом каталоге сейчас находится 18 директорий.
+
+3. Check what inode numbers have "/" and "/boot" directory. Why?____________________________________________________________
+
+[student@localhost ~]$ stat /
+...
+Inode: 64
+...
+[student@localhost ~]$ stat /boot
+...
+Inode: 64
+...
+
+[student@localhost chapter5]$ df -i
+Filesystem               Inodes IUsed   IFree IUse% Mounted on
+devtmpfs                 123880   351  123529    1% /dev
+tmpfs                    126843     1  126842    1% /dev/shm
+tmpfs                    126843   456  126387    1% /run
+tmpfs                    126843    16  126827    1% /sys/fs/cgroup
+/dev/mapper/centos-root 3248128 34660 3213468    2% /
+/dev/sda1                524288   332  523956    1% /boot
+
+Полагаю, директории / и /boot имеют одинаковый inode, потому что inode задается автоматически для ссылки загрузчика на корневую файловую систему.
+Они находятся на разных разделах диска, поэтому одинаковый inode допустим и это не один и тот же каталог с различным содержимым.
+
+4. Check the root directory space usage by du command.____________________________________________________________
+Compare it with an information from df. 
+If you find differences, try to find out why it happens.
+
+[student@localhost chapter5]$ sudo du / -hs 2> /dev/null
+2.6G    /
+[student@localhost chapter5]$ df -h /dev/mapper/centos-root
+Filesystem               Size  Used Avail Use% Mounted on
+/dev/mapper/centos-root  6.2G  2.5G  3.8G  40% /
+
+
+Разница в размерах заключается в том, что подкаталог корня /boot смонтирован на другом разделе на диске.
+В итоге du показывает общий размер корневого каталога, а df просматривает отдельно разделы диска.
+
+5. Check disk space usage of /var/log directory using ncdu____________________________________________________________
+
+[student@localhost chapter5]$ ncdu /var/
+.  28.0 KiB [   lqqqItem infoqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqk
+.   8.0 KiB [   x                                                          x
+    4.0 KiB [   x  Name: log                                               x
+    0.0   B [   x  Path: /var                                              x
+    0.0   B [   x  Type: Directory                                         x
+.   0.0   B [   x                                                          x
+    0.0   B [   x     Disk usage:   4.5 MiB (4,718,592 B)                  x
+@   0.0   B [   x  Apparent size:   4.7 MiB (4,959,063 B)                  x
+@   0.0   B [   x                                                          x
+e   0.0   B [   x                              Press i to hide this window x
+@   0.0   B [   mqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqj
+
