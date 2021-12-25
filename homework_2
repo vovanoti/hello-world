@@ -1,0 +1,112 @@
+# Task 2:
+
+Add NGINX repository (need to find repository config on https://www.nginx.com/) and complete the following tasks using yum:
+
+1. Check if NGINX repository enabled or not.__________________________________________________________________
+
+[student@localhost yum.repos.d]$ sudo vi /etc/yum.repos.d/nginx.repo
+
+[nginx]
+name=nginx repo
+baseurl=https://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=0
+enabled=1
+
+[student@localhost ~]$ yum repoinfo nginx
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.axelname.ru
+ * extras: mirror.docker.ru
+ * updates: mirror.axelname.ru
+nginx                                                                 | 2.9 kB  00:00:00
+nginx/7/x86_64/primary_db                                             |  70 kB  00:00:00
+Repo-id      : nginx/7/x86_64
+Repo-name    : nginx repo
+Repo-status  : disabled
+Repo-revision: 1637076068
+Repo-updated : Tue Nov 16 18:21:09 2021
+Repo-pkgs    : 256
+Repo-size    : 131 M
+Repo-baseurl : https://nginx.org/packages/centos/7/x86_64/
+Repo-expire  : 21,600 second(s) (last: Fri Dec 24 02:14:49 2021)
+  Filter     : read-only:present
+Repo-filename: /etc/yum.repos.d/nginx.repo
+
+repolist: 256
+
+2. Install NGINX.__________________________________________________________________
+
+[student@localhost ~]$ sudo yum install nginx
+
+3. Check yum history and undo NGINX installation.__________________________________________________________________
+
+[student@localhost ~]$ sudo yum history
+[student@localhost ~]$ sudo yum history undo 13
+
+4. Disable NGINX repository.__________________________________________________________________
+
+?[student@localhost ~]$ sudo yum list available --disablerepo=nginx
+[student@localhost yum.repos.d]$ sudo vi /etc/yum.repos.d/nginx.repo
+[nginx]
+name=nginx repo
+baseurl=https://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=0
+enabled=0
+
+
+5. Remove sysstat package installed in the first task.__________________________________________________________________
+
+[student@localhost yum.repos.d]$ yum remove sysstat
+...
+Running transaction
+  Erasing    : sysstat-10.1.5-19.el7.x86_64                                              1/1
+  Verifying  : sysstat-10.1.5-19.el7.x86_64                                              1/1
+
+Removed:
+  sysstat.x86_64 0:10.1.5-19.el7
+
+Complete!
+
+6. Install EPEL repository and get information about it.__________________________________________________________________
+
+[student@localhost yum.repos.d]$ sudo yum install epel-release
+...
+Installed:
+  epel-release.noarch 0:7-11
+
+Complete!
+
+[student@localhost yum.repos.d]$ sudo yum repolist
+...
+repo id                     repo name                                                  status
+base/7/x86_64               CentOS-7 - Base                                            10,072
+epel/x86_64                 Extra Packages for Enterprise Linux 7 - x86_64             13,703
+extras/7/x86_64             CentOS-7 - Extras                                             500
+updates/7/x86_64            CentOS-7 - Updates                                          3,242
+repolist: 27,517
+
+[student@localhost yum.repos.d]$ sudo yum repoinfo epel
+...
+Repo-id      : epel/x86_64
+Repo-name    : Extra Packages for Enterprise Linux 7 - x86_64
+Repo-status  : enabled
+
+7. Find how much packages provided exactly by EPEL repository.__________________________________________________________________
+
+[student@localhost yum.repos.d]$ sudo yum repoinfo epel
+...
+Repo-id      : epel/x86_64
+...
+Repo-revision: 1640393346
+Repo-updated : Sat Dec 25 03:56:38 2021
+Repo-pkgs    : 13,703
+Repo-size    : 16 G
+
+8. Install ncdu package from EPEL repo.
+
+[student@localhost yum.repos.d]$ sudo yum install ncdu
+...
+Installed:
+  ncdu.x86_64 0:1.16-1.el7
+
+Complete!
