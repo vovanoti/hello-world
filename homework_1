@@ -1,0 +1,106 @@
+# Task 1:
+
+Create new disk in Virtual Box (5 GB)
+[student@localhost ~]$ lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0    8G  0 disk
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0    7G  0 part
+  ├─centos-root 253:0    0  6.2G  0 lvm  /
+  └─centos-swap 253:1    0  820M  0 lvm  [SWAP]
+sdb               8:16   0    5G  0 disk
+sr0              11:0    1 1024M  0 rom
+
+1. Create a 2GB   !!! GPT !!!   partition on /dev/sdc of type "Linux filesystem"
+(means all the following partitions created in the following steps on /dev/sdc will be GPT as well)
+
+[student@localhost ~]$ sudo fdisk /dev/sdb
+...
+Command (m for help): g
+Building a new GPT disklabel (GUID: DF55CB29-0E1E-4CA4-B875-2A6462564D10)
+
+Command (m for help): n
+Partition number (1-128, default 1):
+First sector (2048-10485726, default 2048):
+Last sector, +sectors or +size{K,M,G,T,P} (2048-10485726, default 10485726): +2G
+Created partition 1
+
+Command (m for help): t
+Selected partition 1
+
+Partition type (type L to list all types): 20
+Changed type of partition 'Linux filesystem' to 'Linux filesystem'
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+2. Create a 512MB partition on /dev/sdc of type "Linux swap"
+[student@localhost ~]$ sudo fdisk /dev/sdb
+...
+Command (m for help): n
+Partition number (2-128, default 2):
+First sector (4196352-10485726, default 4196352):
+Last sector, +sectors or +size{K,M,G,T,P} (4196352-10485726, default 10485726): +512M
+Created partition 2
+
+Command (m for help): t
+Partition number (1,2, default 2):
+Partition type (type L to list all types): 19
+Changed type of partition 'Linux filesystem' to 'Linux swap'
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+3. Format the 2GB partition with an XFS file system
+
+[student@localhost ~]$ sudo mkfs -t xfs /dev/sdb1
+meta-data=/dev/sdb1              isize=512    agcount=4, agsize=131072 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=524288, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+4. Initialize 512MB partition as swap space
+[student@localhost ~]$ sudo mkswap /dev/sdb2
+Setting up swapspace version 1, size = 524284 KiB
+no label, UUID=64a4b2b8-635a-4988-9f1a-7ad62ed241fa
+
+[student@localhost ~]$ sudo swapon /dev/sdb2
+
+5. Configure the newly created XFS file system to persistently mount at /backup
+
+[student@localhost ~]$ sudo mkdir /backup
+[student@localhost ~]$ sudo mount /dev/sdb1 /backup
+[student@localhost ~]$ sudo blkid /dev/sdb1
+/dev/sdb1: UUID="6b971171-78b0-4e4f-a84f-cf2fef880232" TYPE="xfs" PARTUUID="b8d3e21e-ca9b-4461-a505-6d0255cde85e"
+
+
+6. Configure the newly created swap space to be enabled at boot
+[student@localhost ~]$ sudo vi /etc/fstab
+/dev/sdb1               /backup                 xfs     defaults        0 0
+/dev/sdb2               swap                    swap    defaults        0 0
+
+7. Reboot your host and verify that /dev/sdc1 is mounted at /backup and that your swap partition  (/dev/sdc2) is enabled
+
+[student@localhost ~]$ sudo reboot
+[student@localhost ~]$ lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0    8G  0 disk
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0    7G  0 part
+  ├─centos-root 253:0    0  6.2G  0 lvm  /
+  └─centos-swap 253:1    0  820M  0 lvm  [SWAP]
+sdb               8:16   0    5G  0 disk
+├─sdb1            8:17   0    2G  0 part /backup
+└─sdb2            8:18   0  512M  0 part [SWAP]
+sr0              11:0    1 1024M  0 rom
