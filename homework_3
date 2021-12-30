@@ -1,0 +1,29 @@
+3. Close session. 
+Find in tcpdump output packets that are related to TCP session closure.
+
+[student@localhost chapter9]$ sudo tcpdump net 192.168.1.194 -w disc.txt
+tcpdump: listening on enp0s3, link-type EN10MB (Ethernet), capture size 262144 bytes
+^C19 packets captured
+19 packets received by filter
+0 packets dropped by kernel
+[student@localhost chapter9]$ tcpdump -r disc.txt
+reading from file disc.txt, link-type EN10MB (Ethernet)
+21:28:50.300071 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [P.], seq 387811420:387811484, ack 500941680, win 4101, length 64
+21:28:50.300233 IP localhost.localdomain.ssh > DESKTOP-SG337K4.13950: Flags [P.], seq 1:65, ack 64, win 288, length 64
+21:28:50.340673 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [.], ack 65, win 4101, length 0
+21:28:50.513574 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [P.], seq 64:128, ack 65, win 4101, length 64
+21:28:50.513752 IP localhost.localdomain.ssh > DESKTOP-SG337K4.13950: Flags [P.], seq 65:129, ack 128, win 288, length 64
+21:28:50.554447 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [.], ack 129, win 4100, length 0
+21:28:50.667164 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [P.], seq 128:192, ack 129, win 4100, length 64
+21:28:50.667305 IP localhost.localdomain.ssh > DESKTOP-SG337K4.13950: Flags [P.], seq 129:193, ack 192, win 288, length 64
+21:28:50.707620 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [.], ack 193, win 4106, length 0
+21:28:50.800273 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [P.], seq 192:256, ack 193, win 4106, length 64
+21:28:50.800438 IP localhost.localdomain.ssh > DESKTOP-SG337K4.13950: Flags [P.], seq 193:257, ack 256, win 288, length 64
+21:28:50.840503 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [.], ack 257, win 4106, length 0
+21:28:51.164705 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [P.], seq 256:320, ack 257, win 4106, length 64
+21:28:51.165157 IP localhost.localdomain.ssh > DESKTOP-SG337K4.13950: Flags [P.], seq 257:401, ack 320, win 288, length 144
+21:28:51.165283 IP localhost.localdomain.ssh > DESKTOP-SG337K4.13950: Flags [P.], seq 401:497, ack 320, win 288, length 96
+21:28:51.165405 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [.], ack 497, win 4105, length 0
+21:28:51.165770 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [F.], seq 320, ack 497, win 4105, length 0
+21:28:51.165968 IP localhost.localdomain.ssh > DESKTOP-SG337K4.13950: Flags [F.], seq 497, ack 321, win 288, length 0
+21:28:51.166053 IP DESKTOP-SG337K4.13950 > localhost.localdomain.ssh: Flags [.], ack 498, win 4105, length 0
