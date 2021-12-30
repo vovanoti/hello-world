@@ -1,0 +1,41 @@
+4. run tcpdump and request any http site in separate session. 
+Find HTTP request and answer packets with ASCII data in it.  
+Tcpdump command must be as strict as possible to capture only needed packages for this http request.
+
+(in the first session)
+[student@localhost chapter9]$ curl google.com
+
+(meanwhile in the second session)
+[student@localhost chapter9]$ sudo tcpdump tcp port 80 -A
+...
+21:42:49.873321 IP localhost.localdomain.48146 > lu-in-f102.1e100.net.http: Flags [P.], seq 1:75, ack 1, win 229, options [nop,nop,TS val 18785845 ecr 508348571], length 74: HTTP: GET / HTT
+P/1.1
+E..~.O@.@..>...`J}.f...P.pw}...{.....\.....
+...5.L..GET / HTTP/1.1
+User-Agent: curl/7.29.0
+Host: google.com
+Accept: */*
+
+21:42:49.877631 IP lu-in-f102.1e100.net.http > localhost.localdomain.48146: Flags [.], ack 75, win 256, options [nop,nop,TS val 508348575 ecr 18785845], length 0
+E..4....z...J}.f...`.P.....{.pw............
+.L.....5
+21:42:49.882517 IP lu-in-f102.1e100.net.http > localhost.localdomain.48146: Flags [P.], seq 1:529, ack 75, win 256, options [nop,nop,TS val 508348580 ecr 18785845], length 528: HTTP: HTTP/1
+.1 301 Moved Permanently
+E..D....{...J}.f...`.P.....{.pw......2.....
+.L.....5HTTP/1.1 301 Moved Permanently
+Location: http://www.google.com/
+Content-Type: text/html; charset=UTF-8
+Date: Thu, 30 Dec 2021 18:42:51 GMT
+Expires: Sat, 29 Jan 2022 18:42:51 GMT
+Cache-Control: public, max-age=2592000
+Server: gws
+Content-Length: 219
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+
+<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
+The document has moved
+<A HREF="http://www.google.com/">here</A>.
+</BODY></HTML>
