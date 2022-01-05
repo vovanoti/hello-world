@@ -1,0 +1,37 @@
+# Task 1:
+
+Q: What is the most frequent browser?
+A: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)
+
+Отделил нужный столбец
+awk -F" '{print $6}' access.log > browser.txt
+
+Далее просчитал вхождения
+awk -f new_fpat.awk browser.txt > sorted_browsers.txt
+
+Скрипт был следующий new_fpat.awk :
+BEGIN {
+FS="\n"
+}
+{s[$1]+=1}
+END {
+for (i in s){
+print i "#####", s[i]}
+}
+
+И отсортировал, поменяв местами поля
+awk -F##### '{tmp=$1;$1=$2;$2=tmp;print $0}' sorted_browsers.txt | sort -g > browser2.txt
+
+В итоге получилось:
+[student@localhost chapter3]$ tail browser2.txt
+
+    4209 Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)
+    4354 Mozilla/5.0 (X11; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0
+    4592 Mozilla/5.0 (Linux; U; Android 8.1.0; zh-CN; EML-AL00 Build/HUAWEIEML-AL00) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 baidu.sogo.uc.UCBrowser/11.9.4.974 UWS/2.13.1.48 Mobile Safari/537.36 AliApp(DingTalk/4.5.11) com.alibaba.android.rimet/10487439 Channel/227200 language/zh-CN
+    7564 python-requests/2.25.1
+    7823 Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+    9497 Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 OPR/32.0.1948.45
+    16086 Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)
+    17036 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36
+    42615 Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko
+    340874 Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)

@@ -1,0 +1,45 @@
+# Task 2:
+
+Q: Show number of requests per month for ip 216.244.66.230 (for example: Sep 2016 - 100500 reqs, Oct 2016 - 0 reqs, Nov 2016 - 2 reqs...)
+
+Отсеял нужный столбец, чтобы в итоге получить месяц/год
+[student@localhost chapter3]$ awk -F" '{if($0 ~ /216.244.66.230/){print $1}} access.log > req.txt
+[student@localhost task2]$ awk '{print $4}' req.txt > months
+[student@localhost task2]$ awk -F/ '{print $2,$3}' months > months1
+[student@localhost task2]$ awk -F: '{print $1}' months1 > months2
+
+Использовал подсчет вхождений уникальных значений в массиве
+[student@localhost task2]$ awk -f arr.txt months2 > months3
+
+В итоге получил желаемый результат
+[student@localhost task2]$ cat months3
+Jul 2021 - 23 reqs
+Feb 2021 - 14 reqs
+Dec 2020 - 1 reqs
+Dec 2021 - 3 reqs
+Oct 2021 - 23 reqs
+Aug 2021 - 108 reqs
+Nov 2021 - 106 reqs
+Apr 2021 - 34 reqs
+Jan 2021 - 43 reqs
+Sep 2021 - 7 reqs
+Mar 2021 - 2 reqs
+Jun 2021 - 3 reqs
+May 2021 - 27 reqs
+
+Сам файл arr.txt содержал следующий код.
+[student@localhost task2]$ cat arr.txt
+BEGIN {
+FS="\n"
+}
+{s[$1] += 1}
+END {
+for (i in s){
+print i" - ",s[i]" reqs"}
+}
+
+В начале задается разделитель - перевод строки, чтобы подсчитывать целую строку.
+Затем создается переменная s (массив), который содержит в себе элемент, то есть ту самую строку, которую считываем.
+К данной переменной прибавляется единица, если существует вхождение для его индекса (строки).
+В самом конце через цикл for выводится полученный результат
+i - означает элемент (строку), s[i] - означает переменную, в которую записывался результат для указанной (i) строки.
