@@ -1,9 +1,17 @@
 # Task 4:
 Change all browsers to "lynx"
 
-Удалось, как и в первом задании, найти закономерность по вхождению слов типа [A-Z][a-z]/[0-9] в последнем поле перед кавычками.
-[student@localhost task4]$ sed 's/[A-Z]\+[a-z]\+\/[0-9]*.[0-9]\+"/lynx/g' access.log > check.log
-
-Как я не пытался избавиться от MSIE, но кроме как прямого указания на вхождение MSIE X.X или MSIEX.X ничего на ум не приходит.
-Например строка ниже заменяет также строки типа MSIE(пробел)X.X
-[student@localhost task4]$ sed 's/\([A-Z]\+[a-z]\+\/[0-9]*.[0-9]\+"\)\|\([A-Z]\+[[:space:]][0-9]\+.[0-9]\+[0-9]\?\)/lynx/g' access.log > check.log
+С помощью строчки ниже, удалось заменить все браузеры на Lynx
+[student@localhost chapter3]$ sed 's/"Mozilla.*"/"Lynx"/' access.log > test.txt
+[student@localhost chapter3]$ less test.txt
+13.66.139.0 - - [19/Dec/2020:13:57:26 +0100] "GET /index.php?option=com_phocagallery&view=category&id=1:almhuette-raith&Itemid=53 HTTP/1.1" 200 32653 "-" "Lynx"
+157.48.153.185 - - [19/Dec/2020:14:08:06 +0100] "GET /apache-log/access.log HTTP/1.1" 200 233 "-" "Lynx"
+157.48.153.185 - - [19/Dec/2020:14:08:08 +0100] "GET /favicon.ico HTTP/1.1" 404 217 "http://www.almhuette-raith.at/apache-log/access.log" "Lynx"
+216.244.66.230 - - [19/Dec/2020:14:14:26 +0100] "GET /robots.txt HTTP/1.1" 200 304 "-" "Lynx"
+54.36.148.92 - - [19/Dec/2020:14:16:44 +0100] "GET /index.php?option=com_phocagallery&view=category&id=2%3Awinterfotos&Itemid=53 HTTP/1.1" 200 30662 "-" "Lynx"
+92.101.35.224 - - [19/Dec/2020:14:29:21 +0100] "GET /administrator/index.php HTTP/1.1" 200 4263 "" "Lynx"
+73.166.162.225 - - [19/Dec/2020:14:58:59 +0100] "GET /apache-log/access.log HTTP/1.1" 200 1299 "-" "Lynx"
+73.166.162.225 - - [19/Dec/2020:14:58:59 +0100] "GET /favicon.ico HTTP/1.1" 404 217 "http://www.almhuette-raith.at/apache-log/access.log" "Lynx"
+54.36.148.108 - - [19/Dec/2020:15:09:30 +0100] "GET /robots.txt HTTP/1.1" 200 304 "-" "Lynx"
+54.36.148.1 - - [19/Dec/2020:15:09:31 +0100] "GET /index.php?option=com_phocagallery&view=category&id=2%3Awinterfotos&Itemid=53 HTTP/1.1" 200 30618 "-" "Lynx"
+162.158.203.24 - - [19/Dec/2020:15:16:50 +0100] "GET /apache-log/access.log HTTP/1.1" 200 2164 "-" "-" "-"
