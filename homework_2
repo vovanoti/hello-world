@@ -1,0 +1,13 @@
+#Task 2:
+
+Disable selinux using kernel cmdline
+
+[student@localhost ~]$ sudo vi /etc/default/grub
+...
+GRUB_CMDLINE_LINUX="crashkernel=auto spectre_v2=retpoline rd.lvm.lv=centos/root rd.lvm.lv=centos/swap rhgb quiet selinux=0"
+...
+[student@localhost ~]$ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+[student@localhost ~]$ sudo shutdown -r now
+[student@localhost ~]$ getenforce
+Disabled
