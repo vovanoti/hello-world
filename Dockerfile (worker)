@@ -1,0 +1,30 @@
+FROM centos:centos7
+
+RUN yum install -y java-1.8.0-openjdk
+ADD https://archive.apache.org/dist/hadoop/common/hadoop-3.1.2/hadoop-3.1.2.tar.gz /opt/
+RUN cd /opt && tar -xf /opt/hadoop-3.1.2.tar.gz
+RUN rm /opt/hadoop-3.1.2.tar.gz
+RUN mkdir /usr/local/hadoop && ln -s /opt/hadoop-3.1.2/ /usr/local/hadoop/current
+RUN curl https://thefoxpw.ru/temp/node_start.sh -o /opt/node_start.sh
+
+#installing and editing the hadoop things
+RUN curl https://thefoxpw.ru/temp/hadoop-env.sh -o /usr/local/hadoop/current/etc/hadoop/hadoop-env.sh
+RUN sed -i 's/^export JAVA_HOME=.*$/export JAVA_HOME=\/usr\/lib\/jvm\/java-1\.8\.0-openjdk-1\.8\.0\.322\.b06-1\.el7_9\.x86_64\/jre/' /usr/local/hadoop/current/etc/hadoop/hadoop-env.sh
+RUN sed -i 's/^export HADOOP_HOME=.*$/export HADOOP_HOME=\/usr\/local\/hadoop\/current/' /usr/local/hadoop/current/etc/hadoop/hadoop-env.sh
+RUN sed -i 's/^export HADOOP_HEAPSIZE_MAX=.*$/export HADOOP_HEAPSIZE_MAX=512M/' /usr/local/hadoop/current/etc/hadoop/hadoop-env.sh
+RUN curl https://thefoxpw.ru/temp/core-site.xml -o /usr/local/hadoop/current/etc/hadoop/core-site.xml
+RUN sed -i 's/%HDFS_NAMENODE_HOSTNAME%/172\.17\.0\.1/' /usr/local/hadoop/current/etc/hadoop/core-site.xml
+
+RUN curl https://thefoxpw.ru/temp/hdfs-site.xml -o /usr/local/hadoop/current/etc/hadoop/hdfs-site.xml
+RUN sed -i 's/%DATANODE_DIRS%/\/opt\/mount1\/datanode-dir,\/opt\/mount2\/datanode-dir/' /usr/local/hadoop/current/etc/hadoop/hdfs-site.xml
+RUN curl https://thefoxpw.ru/temp/yarn-site.xml -o /usr/local/hadoop/current/etc/hadoop/yarn-site.xml
+RUN sed -i 's/%NODE_MANAGER_LOCAL_DIR%/\/opt\/mount1\/nodemanager-local-dir,\/opt\/mount2\/nodemanager-local-dir/' /usr/local/hadoop/current/etc/hadoop/yarn-site.xml
+RUN sed -i 's/%NODE_MANAGER_LOG_DIR%/\/opt\/mount1\/nodemanager-log-dir,\/opt\/mount2\/nodemanager-log-dir/' /usr/local/hadoop/current/etc/hadoop/yarn-site.xml
+RUN sed -i 's/%YARN_RESOURCE_MANAGER_HOSTNAME%/172\.17\.0\.1/' /usr/local/hadoop/current/etc/hadoop/yarn-site.xml
+
+VOLUME /opt/mount1/datanode-dir /opt/mount2/nodemanager-local-dir
+
+#launch hadoop
+CMD ["sh", "/opt/node_start.sh"]
+
+EXPOSE 8042
