@@ -1,0 +1,47 @@
+1. Создать 3 ВМ
+[student@localhost ansible]$ cat ansible.cfg
+[defaults]
+host_key_checking       = false
+inventory               = ./hosts.txt
+
+[student@localhost ansible]$ cat hosts.txt
+[staging_ALL:children]
+staging_servers
+prod_servers
+
+[staging_servers:vars]
+ansible_user=exam
+ansible_ssh_private_key_file=/home/student/.ssh/id_rsa
+message=hello
+
+[staging_servers]
+headnode        ansible_host=192.168.1.56
+worker          ansible_host=192.168.1.97
+
+[prod_servers:vars]
+ansible_user=user
+ansible_ssh_private_key_file=/home/student/.ssh/id_rsa
+
+[prod_servers]
+centos2         ansible_host=192.168.1.209
+
+[WEB_servers]
+192.168.1.74
+
+2. На одной из них установить ansible и создать отдельного пользователя, из-под которого он будет запускаться
+[student@localhost ~]$ sudo adduser user_a
+3. Используя ansible ad-hoc:
+  - создать такого же пользователя на остальных машинах
+  [student@localhost ansible]$ ansible staging_ALL -m shell -a "useradd user_a" -b
+  - подложить ему ssh-ключи
+  [student@localhost ansible]$ ansible staging_ALL -m file -a "state=directory dest=/home/user_a/.ssh mode=700 owner=user_a group=user_a" -b
+  [student@localhost ansible]$ sudo ansible staging_ALL -m copy -a "src=/home/user_a/.ssh/user_a_rsa.pub dest=/home/user_a/.ssh/authorized_keys mode=600 owner=user_a group=user_a" -b
+  - дать возможность использовать sudo (помните о том, что редактирование /etc/sudoers не через visudo - плохая идея)
+  sudo cat /home/user_a/wheel_nopasswd
+  %wheel  ALL=(ALL:ALL)   NOPASSWD:ALL
+  [student@localhost ansible]$ ansible staging_ALL -m shell -a "usermod -aG wheel user_a" -b
+  [student@localhost ansible]$ sudo ansible staging_ALL -m copy -a "src=/home/user_a/wheel_nopasswd dest=/etc/sudoers.d/wheel_nopasswd" -b
+  4. написать плейбук, со ролями, которые позволят (в другом файле):
+  - создать пользователя из п.2; обновить все пакеты в системе
+  - установить ntp-сервер и заменить его стандартный конфиг на кастомный (примеры можно поискать в сети)
+  - установить mysql-сервер, создать пользователя БД и саму базу данных

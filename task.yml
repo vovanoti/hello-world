@@ -1,0 +1,40 @@
+---
+ - name: Create profiles and update yum packages
+   hosts: staging_ALL
+   become: yes
+
+   tasks:
+   - name: Create profiles
+     user: name=user_a
+
+   - name: Update packages
+     yum: name=* state=latest
+
+   - name: Install ntpd
+     yum: name=ntp state=latest
+
+   - name: Enable and launch ntp in system load
+     service: name=ntpd state=started enabled=yes
+
+   - name: Change the default configuration of ntp server
+     shell: sed -i s/centos/ubuntu/ /etc/ntp.conf
+
+   - name: Download the mysql
+get_url: url=https://dev.mysql.com/get/mysql80-community-release-el7-5.noarch.rpm dest=/home/user_a/
+     notify: Upload mysql
+
+   - name: Install the mysql via yum
+     yum: name=mysql-server state=latest
+
+   - name: Start mysql-server and make it enabled
+     service: name=mysqld state=started enabled=yes
+
+   - name: Saved mysql pass in var
+     shell: "less /var/log/mysqld.log | grep root@localhost | awk -F: '{print $4}' | awk '{print $1}'"
+     register: sql_pass
+
+
+   handlers:
+   - name: Upload mysql
+     shell: rpm -U /home/user_a/mysql80-community-release-el7-5.noarch.rpm
+
